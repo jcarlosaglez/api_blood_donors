@@ -2,7 +2,6 @@
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
-const routes = require('./routes');
 const {mongoDebug} = require("./config");
 require('dotenv').config();
 
@@ -20,7 +19,8 @@ server.use(express.json());
 // Configuración de mongoose
 mongoose.connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
+    useCreateIndex: true
 })
 .then(() => {
     console.log("Conexión con la base de datos establecida!");
@@ -32,8 +32,12 @@ mongoose.connect(process.env.MONGODB_URI, {
 
 mongoose.set("debug", mongoDebug);
 
+require('./models/Donor.js');
+require('./models/Receiver.js');
+require('./models/Request.js');
+
 // Rutas de la API
-server.use(routes);
+server.use(require('./routes'));
 
 // Control de errores 404
 server.use((req, res, next) => {
