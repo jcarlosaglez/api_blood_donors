@@ -1,5 +1,4 @@
-const mongoose = require('mongoose');
-const Request = mongoose.model('Request');
+const Request = require('mongoose').model('Request');
 
 function r_create(req, res, next) {
     return res.status(200).json({
@@ -36,13 +35,6 @@ function r_delete(req, res, next) {
     });
 }
 
-function r_login(req, res, next) {
-    return res.status(200).json({
-        success: true,
-        msg: "TODO Login"
-    });
-}
-
 function r_search(req, res, next) {
     return res.status(200).json({
         success: true,
@@ -56,6 +48,5 @@ module.exports = {
     r_readAll,
     r_update,
     r_delete,
-    r_login,
     r_search
 }

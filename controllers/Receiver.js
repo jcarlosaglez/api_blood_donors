@@ -1,5 +1,4 @@
-const mongoose = require('mongoose');
-const Receiver = mongoose.model('Receiver');
+const Receiver = require('mongoose').model('Receiver');
 
 async function r_create(req, res, next) {
     const body = req.body;

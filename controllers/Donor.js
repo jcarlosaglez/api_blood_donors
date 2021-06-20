@@ -1,5 +1,4 @@
-const mongoose = require('mongoose');
-const Donor = mongoose.model('Donor');
+const Donor = require('mongoose').model('Donor');
 
 async function d_create(req, res, next) {
     const body = req.body;
