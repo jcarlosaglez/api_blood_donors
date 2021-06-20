@@ -34,4 +34,4 @@ RequestSchema.methods.publicdata = function () {
     }
 }
 
-model.toString('Request', RequestSchema);
+model('Request', RequestSchema);
