@@ -43,6 +43,8 @@ const ReceiverSchema = new Schema({
     salt: String
 }, {timestamps: true});
 
+ReceiverSchema.plugin(unique_validator);
+
 ReceiverSchema.methods.createPassword = function (password) {
     this.salt = crypto
 		.randomBytes(16)

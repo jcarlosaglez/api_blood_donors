@@ -54,6 +54,8 @@ const DonorSchema = new Schema({
     salt: String
 }, {timestamps: true});
 
+DonorSchema.plugin(unique_validator);
+
 DonorSchema.methods.createPassword = function (password) {
     this.salt = crypto
 		.randomBytes(16)
