@@ -2,6 +2,23 @@ const Donor = require('mongoose').model('Donor');
 
 async function d_create(req, res, next) {
     const body = req.body;
+
+    if(!body.password) {
+        return res.status(400).json({
+            success: false,
+            msg: 'Algunos campos presentan un error de validación.',
+            data: {'password': 'El campo Contraseña es requerido.'}
+        });
+    }
+    console.log(typeof body.form_answers)
+    if(body.form_answers.constructor !== Object || (Object.keys(body.form_answers).length === 0 && body.form_answers.constructor === Object)) {
+        return res.status(400).json({
+            success: false,
+            msg: 'Algunos campos presentan un error de validación.',
+            data: {'form_answers': 'El Formulario es requerido.'}
+        });
+    }
+
     const password = body.password;
 
     delete body.password;
@@ -12,6 +29,7 @@ async function d_create(req, res, next) {
 
     try {
         await donor.save();
+
         return res.status(201).json({
             success: true,
             msg: 'Registro creado correctamente.',
@@ -19,8 +37,24 @@ async function d_create(req, res, next) {
         });
     }
     catch (error) {
-        console.log(error);
-        return res.status(500);
+        if(error.name === 'ValidationError') {
+            let validationErrors = {};
+
+            Object.keys(error.errors).forEach(key => {
+                validationErrors[key] = error.errors[key].message
+            });
+
+            return res.status(400).json({
+                success: false,
+                msg: 'Algunos campos presentan un error de validación.',
+                data: validationErrors
+            });
+        }
+
+        return res.status(500).json({
+            success: false,
+            msg: 'Algo salio mal.'
+        });
     }
 }
 

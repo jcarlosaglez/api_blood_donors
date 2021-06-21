@@ -9,7 +9,7 @@ const DonorSchema = new Schema({
         type: String,
         unique: true,
         uppercase: true,
-        required: 'El campo {PATH} es requerido.'
+        required: 'El campo Curp es requerido.'
     },
     first_name: {
         type: String,
@@ -28,7 +28,7 @@ const DonorSchema = new Schema({
         type: String,
         unique: true,
         lowercase: true,
-        required: 'El campo Correo es requerido',
+        required: 'El campo Correo es requerido.',
         index: true
     },
     phone_number: {
@@ -37,24 +37,27 @@ const DonorSchema = new Schema({
     place_of_residence: String,
     blood_type: {
         type: String,
+        uppercase: true,
 		match: [/^(?:A|B|AB|O)[+-]$/, "El tipo de sangre no es valido."],
         required: 'El campo Tipo de sangre es requerido.',
-        index:true
+        index: true
     },
     certified_file: String,
     form_answers: {
-        type: Array,
+        type: Object,
+        default: undefined,
         required: 'El Formulario es requerido.'
     },
     status: {
         type: String,
+        required: 'El campo status no esta establecido.',
         enum: ['activo', 'inactivo']
     },
     hash: String,
     salt: String
 }, {timestamps: true});
 
-DonorSchema.plugin(unique_validator);
+DonorSchema.plugin(unique_validator, {message: 'El campo {PATH} ya esta en uso.'});
 
 DonorSchema.methods.createPassword = function (password) {
     this.salt = crypto
