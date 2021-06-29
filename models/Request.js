@@ -3,21 +3,27 @@ const {Schema, model} = require('mongoose');
 const RequestSchema = new Schema({
     id_receiver: {
         type: Schema.Types.ObjectId,
-        ref: 'Receiver'
+        ref: 'Receiver',
+        required: 'El campo Receptor es requerido.'
     },
     id_donor: {
         type: Schema.Types.ObjectId,
-        ref: 'Donor'
+        ref: 'Donor',
+        required: 'El campo Donador es requerido.'
     },
     required_blood_type: {
         type: String,
-        required: 'El campo Tipo de sangre requerida es requerido.',
-        index: true
+        trim: true,
+        uppercase: true,
+		match: [/^(?:A|B|AB|O)[+-]$/, "El tipo de sangre no es valido."],
+        required: 'El campo Tipo de sangre requerida es requerido.'
     },
     message: String,
     status: {
         type: String,
-        enum: ['enviada', 'aceptada', 'rechazada', 'cancelada']
+        trim: true,
+        required: 'El campo status no esta establecido.',
+        enum: ['enviada', 'aceptada', 'rechazada', 'eliminada']
     }
 }, {timestamps: true});
 

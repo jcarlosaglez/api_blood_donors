@@ -9,40 +9,55 @@ const DonorSchema = new Schema({
         type: String,
         unique: true,
         uppercase: true,
+        trim: true,
         required: 'El campo Curp es requerido.'
     },
     first_name: {
         type: String,
+        trim: true,
         required: 'El campo Nombre(s) es requerido.'
     },
     last_name: {
         type: String,
+        trim: true,
         required: 'El campo Apellidos es requerido.'
     },
     date_of_birth: {
         type: String,
+        trim: true,
         required: 'El campo Fecha de nacimiento es requerido.'
     },
-    gender: String,
+    gender: {
+        type: String,
+        trim: true,
+        default: 'Prefieron no decir.'
+    },
     email: {
         type: String,
+        trim: true,
         unique: true,
         lowercase: true,
         required: 'El campo Correo es requerido.',
         index: true
     },
     phone_number: {
-        type: String
+        type: String,
+        trim: true,
     },
     place_of_residence: String,
     blood_type: {
         type: String,
+        trim: true,
         uppercase: true,
 		match: [/^(?:A|B|AB|O)[+-]$/, "El tipo de sangre no es valido."],
         required: 'El campo Tipo de sangre es requerido.',
         index: true
     },
-    certified_file: String,
+    certified_file: {
+        type: String,
+        trim: true,
+        required: 'El campo Archivo certificado es requerido.'
+    },
     form_answers: {
         type: Object,
         default: undefined,
@@ -50,8 +65,9 @@ const DonorSchema = new Schema({
     },
     status: {
         type: String,
+        trim: true,
         required: 'El campo status no esta establecido.',
-        enum: ['activo', 'inactivo']
+        enum: ['activo', 'inactivo', 'eliminado']
     },
     hash: String,
     salt: String
@@ -97,6 +113,19 @@ DonorSchema.methods.toAuthJson = function () {
 }
 
 DonorSchema.methods.publicData = function () {
+    return {
+        id: this.id,
+        first_name: this.first_name,
+        last_name: this.last_name,
+        gender: this.gender,
+        email: this.email,
+        place_of_residence: this.place_of_residence,
+        blood_type: this.blood_type,
+        status: this.status
+    }
+}
+
+DonorSchema.methods.fullData = function () {
     return {
         id: this.id,
         curp: this.curp,

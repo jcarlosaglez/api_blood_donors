@@ -9,41 +9,53 @@ const ReceiverSchema = new Schema({
         type: String,
         unique: true,
         uppercase: true,
-        required: 'El campo {PATH} es requerido.'
+        trim: true,
+        required: 'El campo Curp es requerido.'
     },
     first_name: {
         type: String,
+        trim: true,
         required: 'El campo Nombre(s) es requerido.'
     },
     last_name: {
         type: String,
+        trim: true,
         required: 'El campo Apellidos es requerido.'
     },
     date_of_birth: {
         type: String,
+        trim: true,
         required: 'El campo Fecha de nacimiento es requerido.'
     },
-    gender: String,
+    gender: {
+        type: String,
+        trim: true,
+        default: 'Prefieron no decir.'
+    },
     email: {
         type: String,
+        trim: true,
         unique: true,
         lowercase: true,
         required: 'El campo Correo es requerido',
         index: true
     },
     phone_number: {
-        type: String
+        type: String,
+        trim: true,
     },
     place_of_residence: String,
     status: {
         type: String,
-        enum: ['activo', 'inactivo']
+        trim: true,
+        required: 'El campo status no esta establecido.',
+        enum: ['activo', 'inactivo', 'eliminado']
     },
     hash: String,
     salt: String
 }, {timestamps: true});
 
-ReceiverSchema.plugin(unique_validator);
+ReceiverSchema.plugin(unique_validator, {message: 'El campo {PATH} ya esta en uso.'});
 
 ReceiverSchema.methods.createPassword = function (password) {
     this.salt = crypto
@@ -83,6 +95,19 @@ ReceiverSchema.methods.toAuthJson = function () {
 }
 
 ReceiverSchema.methods.publicData = function () {
+    return {
+        id: this.id,
+        first_name: this.first_name,
+        last_name: this.last_name,
+        gender: this.gender,
+        email: this.email,
+        phone_number: this.phone_number,
+        place_of_residence: this.place_of_residence,
+        status: this.status,
+    }
+}
+
+ReceiverSchema.methods.fullData = function () {
     return {
         id: this.id,
         curp: this.curp,
