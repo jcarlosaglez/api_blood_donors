@@ -35,6 +35,7 @@ mongoose.set("debug", mongoDebug);
 require('./models/Donor.js');
 require('./models/Receiver.js');
 require('./models/Request.js');
+require('./config/passport.js');
 
 // Rutas de la API
 server.use(require('./routes'));
