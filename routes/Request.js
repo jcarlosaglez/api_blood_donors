@@ -1,18 +1,20 @@
 const router = require('express').Router();
+const auth = require('./auth.js');
+const is_receiver = require('../middlewares/is_receiver.js');
 const {
-    r_create,
-    r_readOne,
-    r_readAll,
-    r_update,
-    r_delete,
-    r_search
+    createRequest,
+    readOneRequest,
+    readAllRequests,
+    updateRequest,
+    deleteRequest,
+    search
 } = require('../controllers/Request.js');
 
-router.post('/', r_create);
-router.get('/:id', r_readOne);
-router.get('/', r_readAll);
-router.put('/:id', r_update);
-router.delete('/:id', r_delete);
-router.get('/search', r_search);
+router.post('/', [auth.required, is_receiver], createRequest);
+router.get('/search', auth.required, search);
+router.get('/:id', auth.required, readOneRequest);
+router.get('/', auth.required, readAllRequests);
+router.patch('/:id', auth.required, updateRequest);
+router.delete('/:id', [auth.required, is_receiver], deleteRequest);
 
 module.exports = router;

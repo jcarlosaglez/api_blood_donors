@@ -1,20 +1,48 @@
 const router = require('express').Router();
+const auth = require('./auth.js');
+const is_receiver = require('../middlewares/is_receiver.js');
 const {
-    r_create,
-    r_readOne,
-    r_readAll,
-    r_update,
-    r_delete,
-    r_login,
-    r_search
+    createReceiver,
+    readOneReceiver,
+    readAllReceivers,
+    updateReceiver,
+    deleteReceiver,
+    login,
+    search,
+    me
 } = require('../controllers/Receiver.js');
 
-router.post('/', r_create);
-router.get('/:id', r_readOne);
-router.get('/', r_readAll);
-router.put('/:id', r_update);
-router.delete('/:id', r_delete);
-router.post('/login', r_login);
-router.get('/search', r_search);
+router.post('/login', login);
+router.post('/', createReceiver);
+router.get('/me', [auth.required, is_receiver], me, (error, req, res, next) => {
+    if(error.name === 'UnauthorizedError') {
+        return res.status(400).json({
+            success: false,
+            msg: 'Error de autorización.',
+            data: {'code': error.code, 'message': error.message}
+        });
+    }
+});
+router.get('/search', search);
+router.get('/:id', readOneReceiver);
+router.get('/', readAllReceivers);
+router.patch('/:id', [auth.required, is_receiver], updateReceiver, (error, req, res, next) => {
+    if(error.name === 'UnauthorizedError') {
+        return res.status(400).json({
+            success: false,
+            msg: 'Error de autorización.',
+            data: {'code': error.code, 'message': error.message}
+        });
+    }
+});
+router.delete('/:id', [auth.required, is_receiver], deleteReceiver, (error, req, res, next) => {
+    if(error.name === 'UnauthorizedError') {
+        return res.status(400).json({
+            success: false,
+            msg: 'Error de autorización.',
+            data: {'code': error.code, 'message': error.message}
+        });
+    }
+});
 
 module.exports = router;
