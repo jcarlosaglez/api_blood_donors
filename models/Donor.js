@@ -10,6 +10,7 @@ const DonorSchema = new Schema({
         unique: true,
         uppercase: true,
         trim: true,
+		match: [/^([A-Z][AEIOUX][A-Z]{2}\d{2}(?:0[1-9]|1[0-2])(?:0[1-9]|[12]\d|3[01])[HM](?:AS|B[CS]|C[CLMSH]|D[FG]|G[TR]|HG|JC|M[CNS]|N[ETL]|OC|PL|Q[TR]|S[PLR]|T[CSL]|VZ|YN|ZS)[B-DF-HJ-NP-TV-Z]{3}[A-Z\d])(\d)$/, "El campo Curp no tiene un formato válido."],
         required: 'El campo Curp es requerido.'
     },
     first_name: {
@@ -25,6 +26,7 @@ const DonorSchema = new Schema({
     date_of_birth: {
         type: String,
         trim: true,
+		match: [/^(?:[1][9]|[2][0-9])\d{2}\-(?:1[0-2]|(0)?[1-9])\-(?:(0)?[1-9]|[12]\d|3[01])$/, "El campo Fecha de nacimiento debe tener el formato: YYYY-MM-DD"],
         required: 'El campo Fecha de nacimiento es requerido.'
     },
     gender: {
@@ -37,12 +39,14 @@ const DonorSchema = new Schema({
         trim: true,
         unique: true,
         lowercase: true,
+		match: [/\S+@\S+\.\S+/, "El campo Correo no tiene un formato válido."],
         required: 'El campo Correo es requerido.',
         index: true
     },
     phone_number: {
         type: String,
         trim: true,
+		match: [/^\d{10}$/, "El campo Número de telefono debe tener 10 digitos."]
     },
     place_of_residence: String,
     clave_hospital: String,
