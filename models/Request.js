@@ -27,7 +27,7 @@ const RequestSchema = new Schema({
     }
 }, {timestamps: true});
 
-RequestSchema.methods.publicdata = function () {
+RequestSchema.methods.publicData = function () {
     return {
         id: this.id,
         id_receiver: this.id_receiver,

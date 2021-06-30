@@ -1,4 +1,5 @@
 const Request = require('mongoose').model('Request');
+const Donor = require('mongoose').model('Donor');
 
 async function createRequest(req, res, next) {
     const id_receiver = req.user.id;
@@ -11,6 +12,15 @@ async function createRequest(req, res, next) {
     const request = new Request(body);
 
     try {
+        const donor = await Donor.findById(body.id_donor);
+    
+        if(!donor) {
+            return res.status(404).json({
+                success: false,
+                msg: 'El Donador con el ID seleccionado no existe.'
+            });
+        }
+
         await request.save();
 
         return res.status(201).json({
@@ -33,6 +43,13 @@ async function createRequest(req, res, next) {
                 data: validationErrors
             });
         }
+        
+        if(error.name === 'CastError') {
+            return res.status(404).json({
+                success: false,
+                msg: 'El Donador con el ID seleccionado no existe.'
+            });
+        }
 
         return res.status(500).json({
             success: false,
@@ -42,10 +59,30 @@ async function createRequest(req, res, next) {
 }
 
 async function readOneRequest(req, res, next) {
-    const id_receiver = req.user.id;
     const id = req.params.id;
     try {
-        const request = await Request.find({id, id_receiver});
+        let request = {};
+
+        if(req.user.type === 'donor-user') {
+            request= await Request.findOne({_id: id, id_donor: req.user.id}).exec();
+
+            if(request.status !== 'aceptada') {
+                request = await request.populate('id_receiver', 'first_name last_name').execPopulate();
+            }
+            else {
+                request = await request.populate('id_receiver').execPopulate();
+            }
+        }
+        else {
+            request = await Request.findOne({_id: id, id_receiver: req.user.id}).exec();
+
+            if(request.status !== 'aceptada') {
+                request = await request.populate('id_donor', 'first_name last_name blood_type').execPopulate();
+            }
+            else {
+                request = await request.populate('id_donor').execPopulate();
+            }
+        }
 
         return res.status(200).json({
             success: true,
@@ -55,15 +92,21 @@ async function readOneRequest(req, res, next) {
     catch (error) {
         return res.status(404).json({
             success: false,
-            msg: 'No se encontro a un Donador con el ID proporcionado.'
+            msg: 'No se encontro a una Solicitud con el ID proporcionado.'
         });
     }
 }
 
 async function readAllRequests(req, res, next) {
-    const id_receiver = req.user.id;
     try {
-        const requests = await Request.find({id_receiver});
+        let requests = {};
+
+        if(req.user.type === 'donor-user') {
+            requests = await Request.find({id_donor: req.user.id}).populate('id_receiver', 'first_name last_name');
+        }
+        else {
+            requests = await Request.find({id_receiver: req.user.id}).populate('id_donor', 'first_name last_name blood_type');
+        }
 
         return res.status(200).json({
             success: true,
@@ -86,7 +129,7 @@ async function updateRequest(req, res, next) {
         return res.status(400).json({
             success: false,
             msg: 'Algunos campos presentan un error de validación.',
-            data: {'status': 'El campo Contraseña es requerido.'}
+            data: {'status': 'El campo Estatus es requerido.'}
         });
     }
 
@@ -95,7 +138,7 @@ async function updateRequest(req, res, next) {
         'rechazada'
     ];
 
-    if(!donor_updates[status]) {
+    if(!donor_updates.includes(status)) {
         return res.status(400).json({
             success: false,
             msg: 'Solo puedes aceptar o rechazar la solicitud.'
@@ -104,7 +147,8 @@ async function updateRequest(req, res, next) {
 
     try {
         const request = await Request.findById(id);
-        if(req.user.type === 'donor-user' && req.user.id === request.id_donor) {
+
+        if(req.user.type === 'donor-user' && req.user.id == request.id_donor) {
             if(status === 'aceptada') {
                 const donor = await Donor.findById(req.user.id);
                 donor.status = 'inactivo';
@@ -112,7 +156,7 @@ async function updateRequest(req, res, next) {
                 const requests = await Request.find({id_donor: req.user.id});
 
                 requests.forEach(async request => {
-                    if(request.id != id) {
+                    if(request.id != id && request.status === 'enviada') {
                         request.status = 'rechazada';
                         await request.save();
                     }
@@ -157,20 +201,18 @@ async function deleteRequest(req, res, next) {
     const id_receiver = req.user.id;
     const id = req.params.id;
     try {
-        const request = await Request.findOne({id, id_receiver});
+        const request = await Request.findOne({_id: id, id_receiver});
 
-        if(request) {
+        if(request.status === 'enviada') {
             request.status = 'eliminada';
             
             await request.save();
-    
-            return res.status(200).json({
-                success: true,
-                msg: 'Tu cuenta a sido eliminada.'
-            });
         }
 
-        throw new Error('Error');
+        return res.status(200).json({
+            success: true,
+            msg: 'La Solicitud ha a sido eliminada.'
+        });
     }
     catch (error) {
         console.log(error);
@@ -209,13 +251,19 @@ async function search(req, res, next) {
             });
         }
 
-        const request = await Request.find(search);
-        const requests = request.map(request => request.publicData());
+        let requests = {};
+
+        if(req.user.type === 'donor-user') {
+            requests = await Request.find(search).populate('id_receiver', 'first_name last_name');
+        }
+        else {
+            requests = await Request.find(search).populate('id_donor', 'first_name last_name blood_type');
+        }
 
         if(requests.length > 0) {
             return res.status(200).json({
                 success: true,
-                data: requests
+                data: requests.map(request => request.publicData())
             });
         }
         else {
