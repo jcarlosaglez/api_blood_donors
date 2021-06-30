@@ -145,13 +145,6 @@ async function updateReceiver(req, res, next) {
 }
 
 async function deleteReceiver(req, res, next) {
-    if(req.params.id != req.user.id) {
-        return res.status(400).json({
-            success: false,
-            msg: 'Solo puedes eliminar tu propio perfil.'
-        });
-    }
-
     const id = req.user.id;
 
     try {

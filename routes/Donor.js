@@ -66,7 +66,7 @@ router.patch('/', [auth.required, is_donor], updateDonor, (error, req, res, next
         });
     }
 });
-router.delete('/:id', [auth.required, is_donor], deleteDonor, (error, req, res, next) => {
+router.delete('/', [auth.required, is_donor], deleteDonor, (error, req, res, next) => {
     if(error.name === 'UnauthorizedError') {
         return res.status(400).json({
             success: false,

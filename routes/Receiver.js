@@ -35,7 +35,7 @@ router.patch('/', [auth.required, is_receiver], updateReceiver, (error, req, res
         });
     }
 });
-router.delete('/:id', [auth.required, is_receiver], deleteReceiver, (error, req, res, next) => {
+router.delete('/', [auth.required, is_receiver], deleteReceiver, (error, req, res, next) => {
     if(error.name === 'UnauthorizedError') {
         return res.status(400).json({
             success: false,
