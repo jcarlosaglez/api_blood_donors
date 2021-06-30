@@ -178,7 +178,7 @@ async function login(req, res, next) {
         });
     }
 
-    passport.authenticate("receiver-donor", {session: false}, function(err, user, info) {
+    passport.authenticate("local-receiver", {session: false}, function(err, user, info) {
         if(err) {
             return next(err);
         }
