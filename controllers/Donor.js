@@ -252,12 +252,11 @@ async function search(req, res, next) {
         }
 
         const donor = await Donor.find(search);
-        const donors = donor.map(donor => donor.publicData());
 
         if(donors.length > 0) {
             return res.status(200).json({
                 success: true,
-                data: donors
+                data: donor.map(donor => donor.publicData())
             });
         }
         else {

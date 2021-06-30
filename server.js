@@ -12,7 +12,12 @@ const server = express();
 const PORT = process.env.PORT || 3000;
 
 // Configuración de middlewares globales
-server.use(cors());
+server.use(cors({
+    "origin": "*",
+    "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
+    "preflightContinue": false,
+    "optionsSuccessStatus": 204
+}));
 server.use(express.urlencoded({extended: true}));
 server.use(express.json());
 
