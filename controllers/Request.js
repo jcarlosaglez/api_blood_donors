@@ -105,6 +105,19 @@ async function updateRequest(req, res, next) {
     try {
         const request = await Request.findById(id);
         if(req.user.type === 'donor-user' && req.user.id === request.id_donor) {
+            if(status === 'aceptada') {
+                const donor = await Donor.findById(req.user.id);
+                donor.status = 'inactivo';
+                await donor.save();
+                const requests = await Request.find({id_donor: req.user.id});
+
+                requests.forEach(async request => {
+                    if(request.id != id) {
+                        request.status = 'rechazada';
+                        await request.save();
+                    }
+                });
+            }
 
             request.status = status;
 
@@ -171,7 +184,7 @@ async function deleteRequest(req, res, next) {
 async function search(req, res, next) {
     const id = req.user.id;
     const properties = [
-        "curp",
+        "required_blood_type",
         "place_of_residence",
         "status"
     ];

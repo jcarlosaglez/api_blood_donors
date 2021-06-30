@@ -26,7 +26,7 @@ router.get('/me', [auth.required, is_receiver], me, (error, req, res, next) => {
 router.get('/search', search);
 router.get('/:id', readOneReceiver);
 router.get('/', readAllReceivers);
-router.patch('/:id', [auth.required, is_receiver], updateReceiver, (error, req, res, next) => {
+router.patch('/', [auth.required, is_receiver], updateReceiver, (error, req, res, next) => {
     if(error.name === 'UnauthorizedError') {
         return res.status(400).json({
             success: false,

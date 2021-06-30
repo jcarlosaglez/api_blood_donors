@@ -45,6 +45,7 @@ const DonorSchema = new Schema({
         trim: true,
     },
     place_of_residence: String,
+    clave_hospital: String,
     blood_type: {
         type: String,
         trim: true,
@@ -120,6 +121,7 @@ DonorSchema.methods.publicData = function () {
         gender: this.gender,
         email: this.email,
         place_of_residence: this.place_of_residence,
+        clave_hospital: this.clave_hospital,
         blood_type: this.blood_type,
         status: this.status
     }
@@ -136,6 +138,7 @@ DonorSchema.methods.fullData = function () {
         email: this.email,
         phone_number: this.phone_number,
         place_of_residence: this.place_of_residence,
+        clave_hospital: this.clave_hospital,
         blood_type: this.blood_type,
         certified_file: this.certified_file,
         form_answers: this.form_answers,

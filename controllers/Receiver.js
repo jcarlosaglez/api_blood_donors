@@ -87,13 +87,6 @@ async function readAllReceivers(req, res, next) {
 }
 
 async function updateReceiver(req, res, next) {
-    if(req.params.id != req.user.id) {
-        return res.status(400).json({
-            success: false,
-            msg: 'Solo puedes editar tu propio perfil.'
-        });
-    }
-
     const id = req.user.id;
     const properties = [
         "curp",

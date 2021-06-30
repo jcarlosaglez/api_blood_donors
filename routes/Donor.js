@@ -38,15 +38,6 @@ router.get('/me', [auth.required, is_donor], me, (error, req, res, next) => {
 router.get('/search', search);
 router.get('/:id', readOneDonor);
 router.get('/',     readAllDonors);
-router.patch('/:id', [auth.required, is_donor], updateDonor, (error, req, res, next) => {
-    if(error.name === 'UnauthorizedError') {
-        return res.status(400).json({
-            success: false,
-            msg: 'Error de autorización.',
-            data: {'code': error.code, 'message': error.message}
-        });
-    }
-});
 router.patch('/:id/change_certified_file', [auth.required, is_donor, storage.single('certified_file')], changeCertifiedFile, (error, req, res, next) => {
     if(error.name === 'UnauthorizedError') {
         return res.status(400).json({
@@ -65,6 +56,15 @@ router.patch('/:id/change_certified_file', [auth.required, is_donor, storage.sin
         msg: 'Algunos campos presentan un error de validación.',
         data: {'certified_file': error.message}
     });
+});
+router.patch('/', [auth.required, is_donor], updateDonor, (error, req, res, next) => {
+    if(error.name === 'UnauthorizedError') {
+        return res.status(400).json({
+            success: false,
+            msg: 'Error de autorización.',
+            data: {'code': error.code, 'message': error.message}
+        });
+    }
 });
 router.delete('/:id', [auth.required, is_donor], deleteDonor, (error, req, res, next) => {
     if(error.name === 'UnauthorizedError') {

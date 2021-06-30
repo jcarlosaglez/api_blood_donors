@@ -29,7 +29,7 @@ async function createDonor(req, res, next) {
     catch {
         console.log("No es un json");
     }
-    
+
     if(body.form_answers?.constructor !== Object || (Object.keys(body.form_answers).length === 0 && body.form_answers.constructor === Object)) {
         return res.status(400).json({
             success: false,
@@ -116,13 +116,6 @@ async function readAllDonors(req, res, next) {
 }
 
 async function updateDonor(req, res, next) {
-    if(req.params.id != req.user.id) {
-        return res.status(400).json({
-            success: false,
-            msg: 'Solo puedes editar tu propio perfil.'
-        });
-    }
-
     const id = req.user.id;
     const properties = [
         "curp",
@@ -133,6 +126,7 @@ async function updateDonor(req, res, next) {
         "email",
         "phone_number",
         "place_of_residence",
+        "clave_hospital",
         "blood_type",
         "form_answers",
         "status"
@@ -242,6 +236,7 @@ async function search(req, res, next) {
     const properties = [
         "curp",
         "place_of_residence",
+        "clave_hospital",
         "blood_type",
         "status"
     ];
